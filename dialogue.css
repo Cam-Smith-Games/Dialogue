@@ -1,0 +1,142 @@
+﻿@font-face {
+    font-family: 'prstart';
+    src: url('font/prstart.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'yoster';
+    src: url('font/yoster.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'lunchds';
+    src: url('font/lunchds.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'joystix monospace';
+    src: url('font/joystix monospace.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'enchanted_land';
+    src: url('font/enchanted_land.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'dpcomic';
+    src: url('font/dpcomic.ttf') format('truetype');
+}
+
+.dialogue {
+    position: relative;
+    width: 35em;
+    height: 10em;
+    font-family: 'joystix monospace';
+}
+.dialogue > .text {
+    padding: .5em;
+    border-radius: .25em;
+    border: 1px solid black;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+/* #region arrow */
+:root {
+    --arrow-color: black;
+}
+.arrow {
+    position: absolute;
+    bottom: 0.25em;
+    right: 0em;
+    cursor: pointer;
+    width: 3em;
+    height: 2.25em;
+}
+.arrow > i {
+    position: absolute;
+    bottom: 1em;
+    right: 0.75em;
+    width: 1.5em;
+    height: .25em;
+    background-color: var(--arrow-color);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, .2);
+    -webkit-animation: arrow 1.5s ease-in-out infinite;
+    -moz-animation: arrow 1.5s ease-in-out infinite;
+    -o-animation: arrow 1.5s ease-in-out infinite;
+    animation: arrow 1.5s ease-in-out infinite;
+}
+.arrow > i::after {
+    content: '';
+    position: absolute;
+    width: 1em;
+    height: .25em;
+    top: -.25em;
+    right: -0.1em;
+    background-color: var(--arrow-color);
+    transform: rotate(45deg);
+}
+.arrow > i::before {
+    content: '';
+    position: absolute;
+    width: 1em;
+    height: .25em;
+    top: 0.25em;
+    right: -0.1em;
+    background-color: var(--arrow-color);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, .2);
+    transform: rotate(-45deg);
+}
+
+@keyframes arrow {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+@-o-keyframes arrow {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+@-moz-keyframes arrow {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+@-webkit-keyframes arrow {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+/* #endregion */
