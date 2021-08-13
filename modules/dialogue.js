@@ -22,12 +22,12 @@ const emojis = {
 /** @typedef {Object} DialogueNode
  * @property [children] {DialogueNode[]}
  * @property [text] {string}
- * @property [color] {string}
- * @property [classes] {string[]}
- * @property [speed] {number}
+ * @property [color] {string} text color 
+ * @property [classes] {string[]} CSS classes to apply to this node (will effect child nodes)
+ * @property [speed] {number} speed to run through this nodes text
  * @property [emojis] {number[]}
- * @property [delay] {number}
- * @property [newLine] {boolean}
+ * @property [delay] {number} number of milliseconds to wait before processing this node
+ * @property [block] {boolean} determines whether to display as block or inline
  * @property [instant] {boolean}
  */
 
@@ -83,70 +83,69 @@ class Dialogue  {
     /** @type Task[] */
     queue = [];
 
-    /** @type DialogueNode[] */
-    nodes = [];
-
-    /** @param {DialogueNode[]} nodes */
-    constructor(nodes) {
-        this.nodes = nodes;
-        this.#init();
+    /** @param {DialogueNode} root */
+    constructor(root) {
+        this.root = root;
+        this.#processNode(root);
     }
 
-    #init() {
-        // #region CREATING QUEUE
-        /** @param {DialogueNode} node */
-        const processNode = (node) => {
-            // #region ACTIVATING GROUP EFFECTS
 
-            // if newline OR color effect, add html container element 
-            if (node.newLine || node.color) {
-                this.queue.push({
-                    func: () => {
-                        let type = node.newLine ? "div" : "span";
-                        let color = node.color ? (" style='color:" + node.color + "'") : "";
-                        let classes = "";
-                        if (node.classes && node.classes.length > 0) {
-                            classes = " class='";
-                            node.classes.forEach(c => {
-                                classes += c + " ";
-                            });
-                            classes += "' ";
-                        }
-                        $target = $("<" + type + classes + color + "></" + type + ">").appendTo($target);
-                    },
-                    instant: true
-                });
-            }
+    /** generates task queue by recursively processing nodes
+     * @param {DialogueNode} node */
+    #processNode (node) {
+        // #region ACTIVATING GROUP EFFECTS
 
-            if (node.delay) {
-                this.queue.push({
-                    delay: node.delay
-                });
-            }
-            if (node.speed) {
-                this.queue.push({
-                    func: () => {
-                        speed_mult *= node.speed;
-                        //console.log("multiplying speed by " + node.speed + " => " + speed_mult);
+        // if newline OR color effect, add html container element 
+        if (node.block || node.color) {
+            this.queue.push({
+                func: () => {
+                    let type = node.block ? "div" : "span";
+                    let color = node.color ? (" style='color:" + node.color + "'") : "";
+                    let classes = "";
+                    if (node.classes?.length) {
+                        classes = " class='" + node.classes.join(" ") + "' ";
                     }
-                });
-            }
-            // #endregion
+                    $target = $("<" + type + classes + color + "></" + type + ">").appendTo($target);
+                },
+                instant: true
+            });
+        }
 
-            // #region RECURSION
-            if (node.children && node.children.length > 0) {
-                node.children.forEach(child => {
-                    processNode(child);
-                });
-            }
-            // #endregion 
+        if (node.delay) {
+            this.queue.push({
+                delay: node.delay
+            });
+        }
 
-            // #region APPENDING TEXT 
-            if (node.text && node.text.length > 0) {
+        if (node.speed) {
+            this.queue.push({
+                func: () => {
+                    speed_mult *= node.speed;
+                    //console.log("multiplying speed by " + node.speed + " => " + speed_mult);
+                }
+            });
+        }
+        // #endregion
+
+        // #region APPENDING TEXT 
+        if (node.text && node.text.length > 0) {
+            // instant nodes get text applied in one chunk
+            if (node.instant) {
+                this.queue.push({
+                    func: () => {
+                        $target.append(node.text);
+                        playBeep();
+                    }
+                })
+            }
+            // non-instant nodes get separate task for each char
+            else {
                 node.text.split("").forEach(char => this.queue.push({
                     func: () => {
+                        //console.log(char);
                         //console.log("appending: " + char);
                         $target.append(char);
+    
                         // TODO: pass voice
                         if (!node.instant && char && char != "" && char != " ") {
                             playBeep();
@@ -154,48 +153,41 @@ class Dialogue  {
                     }
                 }));
             }
-            if (node.emojis && node.emojis.length > 0) {
-                this.queue.push({
-                    func: () => {
-                        //console.log("appending: " + char);
-                        node.emojis.forEach(emoji => {
-                            $target.append(String.fromCodePoint(emoji));
-                        });
-                    }
-                })
-            }
-            // #endregion  
-
-            // #region DEACTIVATING GROUP EFFECTS
-            // if newline OR color effect, exit html container element 
-            if (node.newLine || node.color) {
-                this.queue.push({
-                    func: () => {
-                        $target = $target.parent();
-                    },
-                    instant: true
-                });
-            }
-
-            if (node.speed) {
-                this.queue.push({
-                    func: () => {
-                        speed_mult /= node.speed;
-                        //console.log("dividing speed by " + node.speed + " => " + speed_mult);
-                    }
-                });
-            }
-            // #endregion
         }
-        this.nodes.forEach(node => processNode(node));
-        // #endregion
+        // #endregion  
+        
+        // #region RECURSION
+        if (node.children && node.children.length) {
+            node.children.forEach(child => {
+                this.#processNode(child);
+            });
+        }
+        // #endregion 
 
+        // #region DEACTIVATING GROUP EFFECTS
+        // if newline OR color effect, exit html container element 
+        if (node.block || node.color) {
+            this.queue.push({
+                func: () => {
+                    $target = $target.parent();
+                },
+                instant: true
+            });
+        }
+
+        if (node.speed) {
+            this.queue.push({
+                func: () => {
+                    speed_mult /= node.speed;
+                    //console.log("dividing speed by " + node.speed + " => " + speed_mult);
+                }
+            });
+        }
+        // #endregion
     }
 
-
     start() {
-
-        
+   
         // #region EVENTS
         $(".dialogue")
             // clicking dialogue instantly finishes
@@ -242,8 +234,68 @@ class Dialogue  {
         processQueue();
     }
 
+
+    /** @param {Element} elem 
+    *  @returns {DialogueNode} */
+    static parseNode(elem) {
+
+        /** @type {DialogueNode} */
+        const node = {};
+
+        // #region extracting properties from node type 
+        const type = elem.nodeName;
+        if (type == "BLOCK") {
+            node.block = true;
+        }
+        if (type == "I") {
+            node.instant = true;
+        }
+        // #endregion
+        
+
+        // #regon extracting text
+        // to ignore text within children, have to clone and remove children before retrieving text
+        //let text = $elem.clone().children().remove().end().text();
+        if (elem.childNodes?.length) {
+            const text = elem.childNodes[0].textContent;
+            // NOTE: not actually trimiming the text, only checking trim to make sure its not white space ONLY
+            if (text && text.trim()) {
+                //text = text.trim();
+                node.text = text;    
+            }
+        }
+        // #endregion
+
+        // #region parsing attributes
+        if (elem.attributes?.length) {
+            for (let i=0; i<elem.attributes.length; i++) {
+                let attr = elem.attributes[i];
+
+                // @ts-ignore
+                node[attr.name]
+                = numberProperties.includes(attr.name) ? Number(attr.value) 
+                : attr.value == "" ? true 
+                : attr.value;
+                
+            }
+        }
+        // #endregion
+
+
+        // #region recursively parsing children
+        if (elem.children?.length) {
+            node.children = [];
+            for (let i=0; i<elem.children.length; i++) {
+                node.children.push(Dialogue.parseNode(elem.children[i]));
+            }
+        }
+        // #endregion
+
+        return node;
+    }
 };
 
+const numberProperties = ["delay", "speed"];
 
 
 
