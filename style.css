@@ -1,0 +1,15 @@
+@import url(dialogue.css);
+
+body {
+    background: #777;
+}
+.dialogue {
+    margin: 0 auto;
+}
+
+
+#btnStart {
+    display: block;
+    margin: 0 auto;
+    padding: 0.5em 3em;
+}
