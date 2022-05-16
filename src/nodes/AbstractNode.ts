@@ -9,51 +9,42 @@
  * @property {string} state ID of current state to extend properties from (optional)
  */
 
+import Character from "../Character.js";
+
+
  //const PROPERTIES = ["speed", "delay", "face", "voice", "classes", "color", "state"];
     
 export default class AbstractNode {
     
     /** Speed to run through text. 
-     * Null, undefined, and <= 0 values will result in node and all of it's children  getting rendered instantly 
-     * @type {number} */
-    speed = undefined;
+     * - Null, undefined, and <= 0 values will result in node and all of it's children  getting rendered instantly  @type {number} */
+    speed:number;
    
-    /** number of milliseconds to wait before processing this node
-     * @type {number}
-     */
-    delay = undefined;
+    /** number of milliseconds to wait before processing this node */
+    delay:number;
 
-    /** img src to face to apply for this node 
-     * @type {string}
-     */
-    face = undefined;
+    /** img src to face to apply for this node */
+    face:string;
 
-    /** audio src of voice (beep) to play for this node 
-     * @type {string}
-     */
-    voice = undefined;
+    /** audio src of voice (beep) to play for this node */
+    voice:string;
 
-    /** CSS classes to apply to this node (will effect child nodes)
-      * @type {string}
-      */
-    classes = undefined;
+    /** CSS classes to apply to this node (will effect child nodes) */
+    classes:string;
 
-    /** text color to apply for this node 
-     * @type {string}
-     */
-    color = undefined;
+    /** text color to apply for this node */
+    color:string;
 
-    /** ID of current state to extend properties from (optional) 
-     * @type {string}
-     */
-    state = undefined;
+    /** ID of current state to extend properties from (optional) */
+    state:string;
 
+    type:string;
     
     /**
-     * @param {Element} [element]
-     * @param {import("../character.js").default} [character] character containing this node (used for pulling in state info)
-     * @param {AbstractNode} [parent] parent to extend properties from */
-    constructor(element, character, parent = null) {
+     * @param [element]
+     * @param [character] character containing this node (used for pulling in state info)
+     * @param  [parent] parent to extend properties from */
+    constructor(element?:Element, character?:Character, parent:AbstractNode = null) {
 
         // attribute inheritance = parent -> state -> self
 
@@ -64,7 +55,7 @@ export default class AbstractNode {
 
         if (element) {
 
-            this.#applyState(element, character);
+            this.applyState(element, character);
 
             this.#apply(element,
                 ["speed", "float"],
@@ -78,12 +69,7 @@ export default class AbstractNode {
 
     }
 
-    /**
-     * 
-     * @param {Element} element 
-     * @param {import("../character.js").default} [character] character containing this node (used for pulling in state info)
-     */
-    #applyState(element, character) {
+    private applyState(element:Element, character:Character) {
         // copy extendable properties from state (if provided)
         if (character) {
             if (element.hasAttribute("state")) {
@@ -105,10 +91,10 @@ export default class AbstractNode {
 
     /**
      * Applies specified attributes from element to node. Some attributes require type mapping
-     * @param {Element} elem HTML element to extract attributes from 
-     * @param {(string | AttributeTuple)[]} attributes list of attributes to extract, either in string or tuple form. If tuple, an extra type parameter is passed to parse string to appropriate type
+     * @param elem HTML element to extract attributes from 
+     * @param attributes list of attributes to extract, either in string or tuple form. If tuple, an extra type parameter is passed to parse string to appropriate type
      */
-    #apply(elem, ...attributes) {
+    #apply(elem:Element, ...attributes:(string | AttributeTuple)[]) {
 
         for (let attr of attributes) {
 
@@ -145,9 +131,8 @@ export default class AbstractNode {
     /**
      * Copies values from parent node. 
      * Can be overriden later by node itself if values are defined
-     * @param {AbstractNode} parent 
     **/
-    #extend(parent) {
+    #extend(parent:AbstractNode) {
         /*PROPERTIES.forEach(prop => {
             if (parent.hasOwnProperty(prop)) {
                 // @ts-ignore
@@ -167,20 +152,9 @@ export default class AbstractNode {
     ////////// STATIC ///////////
     
 
-    /**
-     * @callback ElementMapper
-     * @param {Element} element element to map value from
-     * @returns {any} value mapped from element
-    */
 
-    /**
-     * Maps child elements to appropriate types, excluding nulls
-     * @param {Element} element 
-     * @param {string} selector 
-     * @param {ElementMapper} mapper 
-     * @returns {AbstractNode[]}
-     **/
-     static MapElements(element, selector, mapper) {
+    /** Maps child elements to appropriate types, excluding nulls **/
+     static MapElements(element:Element, selector:string, mapper:ElementMapper):AbstractNode[] {
         return $(element).children(selector)
         .map((_,child) => mapper(child))
         .filter((_,result) => result != null)
@@ -191,24 +165,39 @@ export default class AbstractNode {
 
 
 
-/** 
- * 1 = Attribute Name, 2 = AttributeType 
- * @typedef {[string,string]} AttributeTuple
- */ 
-/**
- * Function that converts string to another value type
- * @callback StringParserCallback
- * @param {string} value string to parse
- * @returns {*} value parsed from string
- */
 /**
  * Object specifying how to map strings to specified typs
  * @type {Object<string,StringParserCallback>}
 */
- const StringParser = {
+ const StringParser:Record<string,StringParserCallback> = {
     // empty bools are interepreted as true (i.e. <... bool /> vs <... bool=true />)
     "bool": str => str == "" || str == "true" ? true : false, 
     "json": str => JSON.parse(str),
     "number": str => Number(str),
     "float": str => parseFloat(str)
 }
+
+
+
+/** 
+ * @param element element to map value from
+ * @returns value mapped from element
+ */
+ type ElementMapper = (element:Element) => any;
+
+
+ /**
+  * Function that converts string to another value type
+  * @param value string to parse
+  * @returns value parsed from string
+  */
+ type StringParserCallback = (value:string) => any;
+ 
+
+
+
+
+ /** 1 = Attribute Name, 2 = AttributeType  */
+type AttributeTuple = ([string,string]);
+
+

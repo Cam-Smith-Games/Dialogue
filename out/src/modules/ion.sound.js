@@ -1,11 +1,3 @@
-﻿export { sound };
-
-
-/** @typedef {Object} SoundOptions
- * @property name {string}
- * @property alias {string}
- */
-
 /**
  * Ion.Sound
  * version 3.0.7 Build 89
@@ -17,100 +9,61 @@
  * Released under MIT licence:
  * http://ionden.com/a/plugins/licence-en.html
  */
-
-
-function extend(parent, child) {
+function extend(parent, child = {}) {
     var prop;
-    child = child || {};
-
     for (prop in parent) {
         if (parent.hasOwnProperty(prop)) {
             child[prop] = parent[prop];
         }
     }
-
     return child;
-};
-
-
-
+}
+;
 if (typeof Audio !== "function" && typeof Audio !== "object" || !("AudioContext" in window)) {
     console.error("Browser doesnt support Audio.");
-
 }
-
-
-
 /**
  * CORE
  * - creating sounds collection
  * - public methods
  */
-
-var is_iOS = /iPad|iPhone|iPod/.test(navigator.appVersion),
-    sounds_num = 0,
-    settings = {};
-
-
-/** @type {Object<string,Sound>} */
+var is_iOS = /iPad|iPhone|iPod/.test(navigator.appVersion), sounds_num = 0, settings = {};
 let sounds = {};
-
-
-
-
-
 function createSound(obj) {
     var name = obj.alias || obj.name;
-
     if (!sounds[name]) {
         sounds[name] = new Sound(obj);
         sounds[name].init();
     }
-};
-
-
-
-
+}
+;
 const audio = new AudioContext();
-
-
-
 class Sound {
-
-    /** @param {SoundOptions} options */
-    constructor (options) {
-        this.options = extend(settings);
-        delete this.options.sounds;
-
-        extend(options, this.options);
-
-        this.request = null;
-        this.streams = {};
-        this.result = {};
-        this.url = "";
-
+    constructor(options) {
         this.loaded = false;
         this.decoded = false;
         this.no_file = false;
         this.autoplay = false;
+        this.options = extend(settings);
+        delete this.options.sounds;
+        extend(options, this.options);
+        this.request = null;
+        this.streams = {};
+        this.result = null;
+        this.url = "";
     }
-
-    init (options) {
+    init(options = {}) {
         if (options) {
             extend(options, this.options);
         }
-
         if (this.options.preload) {
             this.load();
         }
     }
-
-    destroy () {
+    destroy() {
         var stream;
-
         for (let i in this.streams) {
             stream = this.streams[i];
-
             if (stream) {
                 stream.destroy();
                 stream = null;
@@ -120,7 +73,6 @@ class Sound {
         this.result = null;
         this.options.buffer = null;
         this.options = null;
-
         if (this.request) {
             this.request.removeEventListener("load", this.ready.bind(this), false);
             this.request.removeEventListener("error", this.error.bind(this), false);
@@ -128,194 +80,161 @@ class Sound {
             this.request = null;
         }
     }
-
-
-
-    load () {
+    load() {
         if (this.no_file) {
             console.error("No sources for \"" + this.options.name + "\" sound :(");
             return;
         }
-
         if (this.request) {
             return;
         }
-
-
-
         this.url = this.options.path + encodeURIComponent(this.options.name);
         this.request = new XMLHttpRequest();
         this.request.open("GET", this.url, true);
         this.request.responseType = "arraybuffer";
         this.request.addEventListener("load", this.ready.bind(this), false);
         this.request.addEventListener("error", this.error.bind(this), false);
-
         this.request.send();
     }
-
-    ready (data) {
+    ready(data) {
         this.result = data.target;
-
-        if (this.result.readyState !== 4) {
+        if (this.request.readyState !== 4) {
             this.load();
             return;
         }
-
-        if (this.result.status !== 200 && this.result.status !== 0) {
+        if (this.request.status !== 200 && this.request.status !== 0) {
             console.error(this.url + " was not found on server!");
             return;
         }
-
         this.request.removeEventListener("load", this.ready.bind(this), false);
         this.request.removeEventListener("error", this.error.bind(this), false);
         this.request = null;
         this.loaded = true;
-
         this.decode();
     }
-
-    decode () {
+    decode() {
         if (!audio) {
             return;
         }
-
-        audio.decodeAudioData(this.result.response, this.setBuffer.bind(this), this.error.bind(this));
+        audio.decodeAudioData(this.request.response, this.setBuffer.bind(this), this.error.bind(this));
     }
-
-    setBuffer (buffer) {
+    setBuffer(buffer) {
         this.options.buffer = buffer;
         this.decoded = true;
-
         var config = {
             name: this.options.name,
             alias: this.options.alias,
             duration: this.options.buffer.duration
         };
-
         if (this.options.ready_callback && typeof this.options.ready_callback === "function") {
             this.options.ready_callback.call(this.options.scope, config);
         }
-
         if (this.options.sprite) {
-
             for (let i in this.options.sprite) {
                 this.options.start = this.options.sprite[i][0];
                 this.options.end = this.options.sprite[i][1];
                 this.streams[i] = new Stream(this.options, i);
             }
-
-        } else {
-
-            this.streams[0] = new Stream(this.options);
-
         }
-
+        else {
+            this.streams[0] = new Stream(this.options);
+        }
         if (this.autoplay) {
             this.autoplay = false;
             this.play();
         }
     }
-
-    error () {
-        this.reload();
+    error() {
+        this.load();
     }
-
-    play (options) {
+    play(options = {}) {
         delete this.options.part;
-
         if (options) {
             extend(options, this.options);
         }
-
         if (!this.loaded) {
             this.autoplay = true;
             this.load();
-
             return;
         }
-
         if (this.no_file || !this.decoded) {
             return;
         }
-
         if (this.options.sprite) {
             if (this.options.part) {
                 this.streams[this.options.part].play(this.options);
-            } else {
+            }
+            else {
                 for (let i in this.options.sprite) {
                     this.streams[i].play(this.options);
                 }
             }
-        } else {
+        }
+        else {
             this.streams[0].play(this.options);
         }
     }
-
-    stop (options) {
+    stop(options) {
         if (this.options.sprite) {
-
             if (options) {
                 this.streams[options.part].stop();
-            } else {
+            }
+            else {
                 for (let i in this.options.sprite) {
                     this.streams[i].stop();
                 }
             }
-
-        } else {
+        }
+        else {
             this.streams[0].stop();
         }
     }
-
-    pause (options) {
+    pause(options) {
         if (this.options.sprite) {
-
             if (options) {
                 this.streams[options.part].pause();
-            } else {
+            }
+            else {
                 for (let i in this.options.sprite) {
                     this.streams[i].pause();
                 }
             }
-
-        } else {
+        }
+        else {
             this.streams[0].pause();
         }
     }
-
-    volume (options) {
+    volume(options = null) {
         var stream;
-
         if (options) {
             extend(options, this.options);
-        } else {
+        }
+        else {
             return;
         }
-
         if (this.options.sprite) {
             if (this.options.part) {
                 stream = this.streams[this.options.part];
                 stream && stream.setVolume(this.options);
-            } else {
+            }
+            else {
                 for (let i in this.options.sprite) {
                     stream = this.streams[i];
                     stream && stream.setVolume(this.options);
                 }
             }
-        } else {
+        }
+        else {
             stream = this.streams[0];
             stream && stream.setVolume(this.options);
         }
     }
 }
-
-
-class Stream{
-    constructor (options, sprite_part) {
+class Stream {
+    constructor(options, sprite_part = {}) {
         this.alias = options.alias;
         this.name = options.name;
         this.sprite_part = sprite_part;
-
         this.buffer = options.buffer;
         this.start = options.start || 0;
         this.end = options.end || this.buffer.duration;
@@ -323,138 +242,110 @@ class Stream{
         this.volume = options.volume || 1;
         this.scope = options.scope;
         this.ended_callback = options.ended_callback;
-
         this.setLoop(options);
-
         this.source = null;
         this.gain = null;
         this.playing = false;
         this.paused = false;
-
         this.time_started = 0;
         this.time_ended = 0;
         this.time_played = 0;
         this.time_offset = 0;
     }
-
-    destroy () {
+    destroy() {
         this.stop();
-
         this.buffer = null;
         this.source = null;
-
         this.gain && this.gain.disconnect();
         this.source && this.source.disconnect();
         this.gain = null;
         this.source = null;
     }
-
-    setLoop (options) {
+    setLoop(options) {
         // infinite loop actually only loops 9999999 times... might want to redo this
         if (options.loop === true) {
             this.loop = 9999999;
-        } 
+        }
         else if (typeof options.loop === "number") {
             this.loop = +options.loop - 1;
-        } 
+        }
         else {
             this.loop = 0;
         }
     }
-
-    update (options) {
+    update(options) {
         this.setLoop(options);
         if ("volume" in options) {
             this.volume = options.volume;
         }
     }
-
-    play (options) {
+    play(options = {}) {
         if (options) {
             this.update(options);
         }
-
         if (!this.multiplay && this.playing) {
             return;
         }
-
         this.gain = audio.createGain();
         this.source = audio.createBufferSource();
         this.source.buffer = this.buffer;
         this.source.connect(this.gain);
         this.gain.connect(audio.destination);
         this.gain.gain.value = this.volume;
-
         this.source.onended = this.ended.bind(this);
-
         this._play();
     }
-
-    _play () {
-        var start,
-            end;
-
+    _play() {
+        var start, end;
         if (this.paused) {
             start = this.start + this.time_offset;
             end = this.end - this.time_offset;
-        } else {
+        }
+        else {
             start = this.start;
             end = this.end;
         }
-
         if (end <= 0) {
             this.clear();
             return;
         }
-
         this.source.start(0, start, end);
-        
-
         this.playing = true;
         this.paused = false;
         this.time_started = new Date().valueOf();
     }
-
-    stop () {
+    stop() {
         if (this.playing && this.source) {
             this.source.stop(0);
         }
-
         this.clear();
     }
-
-    pause () {
+    pause() {
         if (this.paused) {
             this.play();
             return;
         }
-
         if (!this.playing) {
             return;
         }
-
         this.source && this.source.stop(0);
         this.paused = true;
     }
-
-    ended () {
+    ended() {
         this.playing = false;
         this.time_ended = new Date().valueOf();
         this.time_played = (this.time_ended - this.time_started) / 1000;
         this.time_offset += this.time_played;
-
         if (this.time_offset >= this.end || this.end - this.time_offset < 0.015) {
             this._ended();
             this.clear();
-
             if (this.loop) {
                 this.loop--;
                 this.play();
             }
         }
     }
-
-    _ended () {
+    _ended() {
         var config = {
             name: this.name,
             alias: this.alias,
@@ -462,34 +353,25 @@ class Stream{
             start: this.start,
             duration: this.end
         };
-
         if (this.ended_callback && typeof this.ended_callback === "function") {
             this.ended_callback.call(this.scope, config);
         }
     }
-
-    clear () {
+    clear() {
         this.time_played = 0;
         this.time_offset = 0;
         this.paused = false;
         this.playing = false;
     }
-
-    setVolume (options) {
+    setVolume(options) {
         this.volume = options.volume;
-
         if (this.gain) {
             this.gain.gain.value = this.volume;
         }
     }
 }
-
-
-
-
-function sound (options) {
+export function sound(options) {
     extend(options, settings);
-
     settings.path = settings.path || "";
     settings.volume = settings.volume || 1;
     settings.preload = settings.preload || false;
@@ -499,46 +381,41 @@ function sound (options) {
     settings.scope = settings.scope || null;
     settings.ready_callback = settings.ready_callback || null;
     settings.ended_callback = settings.ended_callback || null;
-
     sounds_num = settings.sounds.length;
-
     if (!sounds_num) {
         console.error("No sound-files provided!");
         return;
     }
-
     for (let i = 0; i < sounds_num; i++) {
         createSound(settings.sounds[i]);
     }
 }
-
-sound._method = function (method, name, options) {
+sound._method = function (method, name, options = {}) {
     if (name) {
+        // @ts-ignore
         sounds[name] && sounds[name][method](options);
-    } else {
+    }
+    else {
         for (let i in sounds) {
             if (!sounds.hasOwnProperty(i) || !sounds[i]) {
                 continue;
             }
-
+            // @ts-ignore
             sounds[i][method](options);
         }
     }
-}
-
+};
 sound.preload = function (name, options) {
     options = options || {};
-    extend({preload: true}, options);
-
+    extend({ preload: true }, options);
     this._method("init", name, options);
-}
-
+};
 sound.destroy = function (name) {
     this._method("destroy", name);
-
     if (name) {
         sounds[name] = null;
-    } else {
+    }
+    else {
         for (let i in sounds) {
             if (!sounds.hasOwnProperty(i)) {
                 continue;
@@ -548,22 +425,17 @@ sound.destroy = function (name) {
             }
         }
     }
-}
-
-sound.play = function (name, options) {
+};
+sound.play = function (name, options = {}) {
     this._method("play", name, options);
-}
-
-sound.stop = function (name, options) {
+};
+sound.stop = function (name, options = {}) {
     this._method("stop", name, options);
-}
-
-sound.pause = function (name, options) {
+};
+sound.pause = function (name, options = {}) {
     this._method("pause", name, options);
-}
-
-sound.volume = function (name, options) {
+};
+sound.volume = function (name, options = {}) {
     this._method("volume", name, options);
-}
-
-
+};
+//# sourceMappingURL=ion.sound.js.map

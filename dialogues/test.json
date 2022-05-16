@@ -3,45 +3,157 @@
         "name": "Smiley",
         "dialogues": [
             {
+                "speed": 1.25,
                 "nodes": [
                     {
-                        "type": "BLOCK"
-                    },
-                    {
-                        "type": "BLOCK"
-                    },
-                    {
+                        "speed": 1,
+                        "face": "game_happy.png",
+                        "voice": "boop_happy.ogg",
                         "children": [
                             {
-                                "delay": 500,
+                                "speed": 1,
+                                "face": "game_happy.png",
+                                "voice": "boop_happy.ogg",
+                                "text": "Prada and Gucci "
+                            },
+                            {
+                                "speed": 1,
+                                "delay": 200,
+                                "face": "game_happy.png",
+                                "voice": "boop_happy.ogg",
                                 "type": "DELAY"
+                            },
+                            {
+                                "speed": 1,
+                                "face": "game_happy.png",
+                                "voice": "boop_happy.ogg",
+                                "text": "don't go together"
                             }
                         ],
                         "type": "BLOCK"
                     },
                     {
+                        "speed": 1,
+                        "face": "game_happy.png",
+                        "voice": "boop_happy.ogg",
+                        "children": [
+                            {
+                                "speed": 1,
+                                "face": "game_happy.png",
+                                "voice": "boop_happy.ogg",
+                                "text": "Louis and Dior, I swear it go better"
+                            }
+                        ],
+                        "type": "DIV"
+                    },
+                    {
+                        "speed": 1,
+                        "face": "game_happy.png",
+                        "voice": "boop_happy.ogg",
+                        "children": [
+                            {
+                                "speed": 1,
+                                "face": "game_happy.png",
+                                "voice": "boop_happy.ogg",
+                                "text": "He wear my drip, "
+                            },
+                            {
+                                "speed": 1,
+                                "delay": 500,
+                                "face": "game_happy.png",
+                                "voice": "boop_happy.ogg",
+                                "type": "DELAY"
+                            },
+                            {
+                                "speed": 1,
+                                "face": "game_happy.png",
+                                "voice": "boop_happy.ogg",
+                                "text": "but I wore it better"
+                            }
+                        ],
+                        "type": "P"
+                    },
+                    {
+                        "speed": 1,
+                        "face": "game_happy.png",
+                        "voice": "boop_happy.ogg",
+                        "children": [
+                            {
+                                "speed": 1,
+                                "face": "game_happy.png",
+                                "voice": "boop_happy.ogg",
+                                "text": "Kilani gang, I swear it go wetter"
+                            }
+                        ],
                         "type": "BLOCK"
                     },
                     {
+                        "speed": 1,
+                        "face": "game_happy.png",
+                        "voice": "boop_happy.ogg",
                         "children": [
                             {
+                                "speed": 1,
+                                "face": "game_happy.png",
+                                "voice": "boop_happy.ogg",
+                                "text": "\n            Huh?\n            "
+                            },
+                            {
+                                "speed": 1,
                                 "delay": 500,
+                                "face": "game_happy.png",
+                                "voice": "boop_happy.ogg",
+                                "children": [
+                                    {
+                                        "speed": 1,
+                                        "delay": 500,
+                                        "face": "game_happy.png",
+                                        "voice": "boop_happy.ogg",
+                                        "text": "Gang"
+                                    }
+                                ],
                                 "type": "INLINE"
                             }
                         ],
                         "type": "BLOCK"
                     },
                     {
+                        "speed": 1,
+                        "face": "game_happy.png",
+                        "voice": "boop_happy.ogg",
+                        "children": [
+                            {
+                                "speed": 1,
+                                "face": "game_happy.png",
+                                "voice": "boop_happy.ogg",
+                                "text": "On go mode, I should get a chain for the promo (ayy)"
+                            }
+                        ],
                         "type": "BLOCK"
                     },
                     {
+                        "speed": 1,
+                        "face": "game_happy.png",
+                        "voice": "boop_happy.ogg",
+                        "children": [
+                            {
+                                "speed": 1,
+                                "face": "game_happy.png",
+                                "voice": "boop_happy.ogg",
+                                "text": "Gang, gang, gang"
+                            }
+                        ],
                         "type": "BLOCK"
+                    },
+                    {
+                        "text": "<e 😳></e>"
                     }
                 ]
             }
         ],
         "states": [
             {
+                "speed": 1,
                 "face": "game_happy.png",
                 "voice": "boop_happy.ogg",
                 "id": null
@@ -55,22 +167,59 @@
                 "speed": 1.25,
                 "id": "fast"
             }
-        ]
+        ],
+        "defaultState": {
+            "speed": 1,
+            "face": "game_happy.png",
+            "voice": "boop_happy.ogg",
+            "id": null
+        }
     },
     {
         "name": "Drake",
         "dialogues": [
             {
+                "face": "img/lildope.png",
+                "voice": "sound/deep.ogg",
                 "nodes": [
                     {
+                        "face": "img/lildope.png",
+                        "voice": "sound/deep.ogg",
+                        "children": [
+                            {
+                                "face": "img/lildope.png",
+                                "voice": "sound/deep.ogg",
+                                "text": "Ight shut the fuck up smiley."
+                            }
+                        ],
                         "type": "BLOCK"
                     },
                     {
+                        "face": "img/lildope.png",
+                        "voice": "sound/deep.ogg",
+                        "children": [
+                            {
+                                "face": "img/lildope.png",
+                                "voice": "sound/deep.ogg",
+                                "text": "\n            The level is just too advanced\n            The bezel is Tiffany stamped, don't grip on my hand\n            I know that I came with the slide from left to right\n            But now I don't wanna dance\n            I got too much on the line, too much on my mind\n            Too much ain't enough for my plans\n            Nike don't pay me to tell you, \"Just do it\"\n            They pay me to show you I do it again\n        "
+                            }
+                        ],
                         "type": "BLOCK"
                     }
                 ]
             }
         ],
-        "states": []
+        "states": [
+            {
+                "face": "img/lildope.png",
+                "voice": "sound/deep.ogg",
+                "id": null
+            }
+        ],
+        "defaultState": {
+            "face": "img/lildope.png",
+            "voice": "sound/deep.ogg",
+            "id": null
+        }
     }
 ]

@@ -1,20 +1,22 @@
-﻿import *  as ion from "../modules/ion.sound.js";
-import Character from "./Character.js";
+﻿import Character from "./Character.js";
+import Dialogue from "./Dialogue.js";
+import { sound, SoundOptions } from "./modules/ion.sound.js";
+import { Task } from "./modules/task.js";
 import ContainerNode from "./nodes/ContainerNode.js";
 import TextNode from "./nodes/TextNode.js";
 
 
+
 // #region SOUND
-/** @type { import('../modules/ion.sound').SoundOptions[]} */
 // storing same sound multiples (distinguished by alias) so we can play them super fast
-let sounds = [];
+let sounds:SoundOptions[]= [];
 for (var i = 1; i <= 15; i++) {
     sounds.push({
         name: "boop.ogg",
         alias: "boop_" + i
     });
 }
-ion.sound({
+sound({
     sounds: sounds,
     path: "res/sound/",
     ext: "ogg",
@@ -27,7 +29,7 @@ let index = 0;
 function playBeep () {
     if (soundEnabled) {
         index = ++index % sounds.length;
-        ion.sound.play(sounds[index].alias);
+        sound.play(sounds[index].alias);
     }
 }
 // #endregion
@@ -37,39 +39,35 @@ function playBeep () {
 // speed = number of blips per second
 let speed = 15;
 
-/** @type {JQuery<HTMLElement>} */
-let $target;
+let $target:JQuery<HTMLElement>;
 
 
 const $dialogue = $(".dialogue");
 
-/** @type {HTMLImageElement} */
-// @ts-ignore
-const face = $dialogue.find(".profile img").get(0);
+
+const face:HTMLImageElement = <HTMLImageElement>$dialogue.find(".profile img").get(0);
 
 export default class DialogueQueue  {
 
     /**
-     * @param {string} path file path to dml file 
+     * @param path file path to dml file 
      */
-    static async GetNewAsync(path) {
+    static async GetNewAsync(path:string) {
         const response = await fetch(path);
         const dml = await response.text();
         return new DialogueQueue(dml); 
     }
 
 
-    /** @type {Character[]} */
-    characters = [];
+    characters:Character[] = [];
 
-    /** @type Task[] */
-    queue = [];
+    queue:Task[] = [];
 
 
     /**
-     * @param {string} dml Dialogue markup language to parse  
+     * @param dml Dialogue markup language to parse  
      */
-    constructor (dml) {
+    constructor (dml:string) {
 
         // NOTE: only character nodes can exist at root level
         // all other node types will be ignored
@@ -85,14 +83,11 @@ export default class DialogueQueue  {
     }
 
 
-    /**
-     * 
-     * @param {ContainerNode|TextNode} node 
-     */
-    #processAbstract(node) {
+   
+    #processAbstract(node:ContainerNode|TextNode) {
         if (node.delay) {
             this.queue.push({
-                title: "delay: " + node.delay,
+                title: "delay: " + node.delay.toString(),
                 delay: node.delay
             });
         }
@@ -115,16 +110,14 @@ export default class DialogueQueue  {
 
 
         if (node instanceof ContainerNode) {
-            this.#processContainer(node);
+            this.processContainer(node);
         } else {
-            this.#processText(node);
+            this.processText(node);
         }
     }
-    /**
-     * 
-     * @param {ContainerNode} node 
-     */
-    #processContainer (node) {
+
+
+    private processContainer (node:ContainerNode) {
         if (node?.children?.length) {
             const classes = node.classes?.length ? (" class='" + node.classes + "' ") : "";   
             const color = node.color ? (" style='color:" + node.color + "'") : "";
@@ -155,11 +148,8 @@ export default class DialogueQueue  {
         }
     }
 
-    /**
-     * 
-     * @param {TextNode} node 
-     */
-    #processText(node) {
+
+    private processText(node:TextNode) {
 
         // GENERATING TEXT
         if (node.text?.length) {
@@ -175,24 +165,24 @@ export default class DialogueQueue  {
             }
             // non-instant nodes get separate task for each char
             else {
-                node.text.split("").forEach(char => this.queue.push({
-                    title: "char: " + char,
-                    func: () => {
-                        $target.append(char); 
-                        // TODO: pass voice
-                        if (node.speed > 0 && char?.trim()) {
-                            playBeep();
+                for (let char of node.text.split("")) {
+                    this.queue.push({
+                        title: "char: " + char,
+                        func: () => {
+                            $target.append(char); 
+                            // TODO: pass voice
+                            if (node.speed > 0 && char?.trim()) {
+                                playBeep();
+                            }
                         }
-                    }
-                }));
+                    })
+                }
             }
         }
     }
 
-    /** 
-     * @param {Character} character
-     * @param {import("./Dialogue.js").default} dialogue */
-    #reset (character, dialogue) {
+
+    private reset (character:Character, dialogue:Dialogue) {
         // TODO: ".dialogue" will need to be a configurable selector
         $target = $dialogue.find(".text").html("");
 
@@ -257,10 +247,10 @@ export default class DialogueQueue  {
 
     /**
      * Builds up a task queue for the specified character/dialogue and then execute its in sequence
-     * @param {string} characterName name of the character thats talking 
-     * @param {*} dialogueIndex index of the dialogue within this characters dialogue collection
+     * @param characterName name of the character thats talking 
+     * @param dialogueIndex index of the dialogue within this characters dialogue collection
      */
-    start(characterName, dialogueIndex) {
+    start(characterName:string, dialogueIndex:any) {
    
         // finding character by name
         const _characters = this.characters.filter(c => c.name == characterName);
@@ -283,7 +273,7 @@ export default class DialogueQueue  {
         const dialogue = character.dialogues[dialogueIndex];
     
         // refresh queue
-        this.#reset(character, dialogue);
+        this.reset(character, dialogue);
 
         console.log("QUEUE: ", this.queue);
 

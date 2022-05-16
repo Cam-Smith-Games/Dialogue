@@ -1,19 +1,17 @@
+import Character from "./Character.js";
 import AbstractNode from "./nodes/AbstractNode.js";
 import ContainerNode from "./nodes/ContainerNode.js";
 
 export default class Dialogue extends AbstractNode {
     
-    /** @type { (ContainerNode | import("./nodes/TextNode.js").default) [] }*/
-    nodes = [];
-
-    /** @type {{ character: string, index: number }}  */
-    next = undefined;
+    nodes: (ContainerNode | import("./nodes/TextNode.js").default) [] = [];
+    next: { character: string, index: number };
 
     /**
-     * @param {Element} element DML Element to extract properties and children from
-     * @param {import("./Character.js").default} character Character containing this dialogue
+     * @param element DML Element to extract properties and children from
+     * @param character Character containing this dialogue
      */
-    constructor(element, character) {   
+    constructor(element:Element, character:Character) {   
         super(element, character);
         this.nodes = ContainerNode.GetChildren(element, character, null);
 
