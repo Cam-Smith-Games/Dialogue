@@ -40,52 +40,35 @@ export default class AbstractNode {
 
     type:string;
     
+    character:Character;
+    expression?:string;
+
     /**
-     * @param [element]
      * @param [character] character containing this node (used for pulling in state info)
      * @param  [parent] parent to extend properties from */
     constructor(element?:Element, character?:Character, parent:AbstractNode = null) {
+        this.character = character;
 
         // attribute inheritance = parent -> state -> self
 
         // copy extendable properties from parent (if provided)
         if (parent) {
-            this.#extend(parent);
+            this.extend(parent);
         }
 
         if (element) {
 
-            this.applyState(element, character);
-
-            this.#apply(element,
+            this.apply(element,
                 ["speed", "float"],
                 ["delay", "number"],
                 "face", 
                 "voice",
                 "classes",
-                "color"
+                "color",
+                "expression"
             );
         }
 
-    }
-
-    private applyState(element:Element, character:Character) {
-        // copy extendable properties from state (if provided)
-        if (character) {
-            if (element.hasAttribute("state")) {
-                const stateID = element.getAttribute("state");
-                const state = character.states.filter(s => s.id == stateID)[0];
-                if (state) {
-                    this.#extend(state);
-                    return;
-                }
-            }
-
-            if (character.defaultState) {
-                this.#extend(character.defaultState);
-            }
-
-        } 
     }
 
 
@@ -94,13 +77,12 @@ export default class AbstractNode {
      * @param elem HTML element to extract attributes from 
      * @param attributes list of attributes to extract, either in string or tuple form. If tuple, an extra type parameter is passed to parse string to appropriate type
      */
-    #apply(elem:Element, ...attributes:(string | AttributeTuple)[]) {
+    private apply(elem:Element, ...attributes:(string | AttributeTuple)[]) {
 
         for (let attr of attributes) {
 
     
-            // arg will either be string or tuple.
-            // string form ignores type and only specifies name
+            // arg will either be string or tuple. string form ignores type and only specifies name
             let name, type = "";
             if (typeof attr == "string") {
                 name = attr;
@@ -132,14 +114,7 @@ export default class AbstractNode {
      * Copies values from parent node. 
      * Can be overriden later by node itself if values are defined
     **/
-    #extend(parent:AbstractNode) {
-        /*PROPERTIES.forEach(prop => {
-            if (parent.hasOwnProperty(prop)) {
-                // @ts-ignore
-                this[prop] = parent[prop];
-            }
-        });*/
-
+    private extend(parent:AbstractNode) {
         this.speed = parent.speed;
         this.delay = parent.delay;
         this.face = parent.face;
@@ -147,6 +122,7 @@ export default class AbstractNode {
         this.classes = parent.classes;
         this.color = parent.color;
         this.state = parent.color;
+        this.expression = parent.expression;
     }
 
     ////////// STATIC ///////////

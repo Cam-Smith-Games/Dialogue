@@ -1,50 +1,23 @@
 const NUMBER_PROPS = ["delay", "speed"];
-/**
-    @callback NodeAttributeApplier
-    @param {string} value
-*/
-/**
-    @param {Element} elem
-    @param {string} prop
-    @param {NodeAttributeApplier} callback
- */
 export function getAttribute(elem, prop, callback) {
     const value = elem.getAttribute(prop);
     if (value) {
         callback(value);
     }
 }
-/**
-    @param {any} obj
-    @param {Element} elem
-    @param {string} prop
- */
 function _applyAttribute(obj, elem, prop) {
     const value = elem.getAttribute(prop);
     if (value) {
         obj[prop] = value;
     }
 }
-/**
-    Copy property values from HTML element to any object
-    @param {Element} elem
-    @param {any} obj
-    @param {string[]} props
- */
+/** Copy property values from HTML element to any object */
 export function applyAttributes(props, elem, obj) {
     for (let prop of props) {
         _applyAttribute(obj, elem, prop);
     }
 }
-/**
- * Function that converts string to another value type
- *  @callback StringParserCallback
- *  @param {string} value string to parse
- *  @returns {*} value parsed from string
- */
-/** Object specifying how to map strings to specified typs
- * @type {Object<string,StringParserCallback>}
- */
+/** Object specifying how to map strings to specified typs */
 const StringParser = {
     // empty bools are interepreted as true (i.e. <... bool /> vs <... bool=true />)
     "bool": str => str == "" || str == "true" ? true : false,
@@ -53,14 +26,9 @@ const StringParser = {
     "float": str => parseFloat(str)
 };
 /**
- * 1 = Attribute Name, 2 = AttributeType
- * @typedef {[string,string]} AttributeTuple
- */
-/**
- *
- * @param {*} obj object to apply attributes to
- * @param {Element} elem HTML element to extract attributes from
- * @param {(string | AttributeTuple)[]} attributes list of attributes to extract, either in string or tuple form. If tuple, an extra type parameter is passed to parse string to appropriate type
+ * @param obj object to apply attributes to
+ * @param elem HTML element to extract attributes from
+ * @param attributes list of attributes to extract, either in string or tuple form. If tuple, an extra type parameter is passed to parse string to appropriate type
  */
 export function apply(obj, elem, ...attributes) {
     for (let attr of attributes) {
@@ -85,10 +53,7 @@ export function apply(obj, elem, ...attributes) {
         obj[prop] = value;
     }
 }
-/** Parsed attributes from Element into Node
-   @param {Element} elem
-   @param {any} node
-*/
+/** Parsed attributes from Element into Node */
 export function extractAttributes(elem, node) {
     var _a;
     if ((_a = elem.attributes) === null || _a === void 0 ? void 0 : _a.length) {
@@ -104,9 +69,9 @@ export function extractAttributes(elem, node) {
 }
 const EXTEND_PROPERTIES = ["SPEED", "VOICE", "FACE"];
 /**
- * @param {*} parent parent object to copy properties from
- * @param {*} child child object to copy properties to
- * @param {string[]} [properties] optional list of properties to extend
+ * @param parent parent object to copy properties from
+ * @param child child object to copy properties to
+ * @param properties optional list of properties to extend
  */
 export function extend(parent, child, properties = null) {
     const props = properties !== null && properties !== void 0 ? properties : EXTEND_PROPERTIES;

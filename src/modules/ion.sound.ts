@@ -88,7 +88,7 @@ class Sound {
     no_file = false;
     autoplay = false;
 
-    result:XMLHttpRequestEventTarget;
+    result:XMLHttpRequest;
     
     
     constructor (options:SoundOptions) {
@@ -164,7 +164,7 @@ class Sound {
     }
 
     ready (data:ProgressEvent<XMLHttpRequestEventTarget>) {
-        this.result = data.target;
+        this.result = <XMLHttpRequest>data.target;
         
         if (this.request.readyState !== 4) {
             this.load();
@@ -189,7 +189,7 @@ class Sound {
             return;
         }
 
-        audio.decodeAudioData(this.request.response, this.setBuffer.bind(this), this.error.bind(this));
+        audio.decodeAudioData(this.result.response, this.setBuffer.bind(this), this.error.bind(this));
     }
 
     setBuffer (buffer:any[]) {

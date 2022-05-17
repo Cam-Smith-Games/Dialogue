@@ -1,0 +1,39 @@
+<dialogue id="adrian_graem1">
+
+    <node character="adrian" speed=50>
+        <div expression="happy">*typing sounds*</div>
+        <delay 500 />
+        <div >If do... don't... else do while...</div>
+        <div>Boy I sure do love codin!</div>
+    </node>
+
+    <node character="adrian">
+        <div expression="mad" >Oh... <delay 500 /> Hey Graem...</div>
+        <div>Didn't see you there buddy...</div>
+        <div expression="default">What's up?</div>
+    </node>
+
+    <node character="graem">
+        <div expression="happy">Hey! <delay 500/> Guess what?! I got TWO kills in PUBG today. 😎</div>
+    </node>
+
+    <node character="graem">
+        <div>But then <delay 200 expression="sad"/> I died...</div>
+    </node>
+
+    <node character="adrian">
+        <div expression="sad">Awww shucks... don't worry buddy...</div>
+        <div expression="default">You'll be as good as me and Cam one day 🧢. Just gotta keep practicin!</div>
+        <delay 1000 />
+        <div></div>
+        <div expression="drink" speed=100>Rum and coke?</div>
+    </node>
+
+    <node character="graem">
+        <div>Oh... <delay 200/> sure.</div>
+        <div>I mean I prefer light beers with my hummus but I guess this will suffice.</div>
+    </node>
+
+    <!-- Cam steps in... This is where user dialogue comes into play -->
+
+</dialogue>

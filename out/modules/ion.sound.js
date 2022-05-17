@@ -1,8 +1,3 @@
-export { sound };
-/** @typedef {Object} SoundOptions
- * @property name {string}
- * @property alias {string}
- */
 /**
  * Ion.Sound
  * version 3.0.7 Build 89
@@ -14,9 +9,8 @@ export { sound };
  * Released under MIT licence:
  * http://ionden.com/a/plugins/licence-en.html
  */
-function extend(parent, child) {
+function extend(parent, child = {}) {
     var prop;
-    child = child || {};
     for (prop in parent) {
         if (parent.hasOwnProperty(prop)) {
             child[prop] = parent[prop];
@@ -34,7 +28,6 @@ if (typeof Audio !== "function" && typeof Audio !== "object" || !("AudioContext"
  * - public methods
  */
 var is_iOS = /iPad|iPhone|iPod/.test(navigator.appVersion), sounds_num = 0, settings = {};
-/** @type {Object<string,Sound>} */
 let sounds = {};
 function createSound(obj) {
     var name = obj.alias || obj.name;
@@ -46,21 +39,20 @@ function createSound(obj) {
 ;
 const audio = new AudioContext();
 class Sound {
-    /** @param {SoundOptions} options */
     constructor(options) {
+        this.loaded = false;
+        this.decoded = false;
+        this.no_file = false;
+        this.autoplay = false;
         this.options = extend(settings);
         delete this.options.sounds;
         extend(options, this.options);
         this.request = null;
         this.streams = {};
-        this.result = {};
+        this.result = null;
         this.url = "";
-        this.loaded = false;
-        this.decoded = false;
-        this.no_file = false;
-        this.autoplay = false;
     }
-    init(options) {
+    init(options = {}) {
         if (options) {
             extend(options, this.options);
         }
@@ -106,11 +98,11 @@ class Sound {
     }
     ready(data) {
         this.result = data.target;
-        if (this.result.readyState !== 4) {
+        if (this.request.readyState !== 4) {
             this.load();
             return;
         }
-        if (this.result.status !== 200 && this.result.status !== 0) {
+        if (this.request.status !== 200 && this.request.status !== 0) {
             console.error(this.url + " was not found on server!");
             return;
         }
@@ -153,9 +145,9 @@ class Sound {
         }
     }
     error() {
-        this.reload();
+        this.load();
     }
-    play(options) {
+    play(options = {}) {
         delete this.options.part;
         if (options) {
             extend(options, this.options);
@@ -212,7 +204,7 @@ class Sound {
             this.streams[0].pause();
         }
     }
-    volume(options) {
+    volume(options = null) {
         var stream;
         if (options) {
             extend(options, this.options);
@@ -239,7 +231,7 @@ class Sound {
     }
 }
 class Stream {
-    constructor(options, sprite_part) {
+    constructor(options, sprite_part = {}) {
         this.alias = options.alias;
         this.name = options.name;
         this.sprite_part = sprite_part;
@@ -287,7 +279,7 @@ class Stream {
             this.volume = options.volume;
         }
     }
-    play(options) {
+    play(options = {}) {
         if (options) {
             this.update(options);
         }
@@ -378,7 +370,7 @@ class Stream {
         }
     }
 }
-function sound(options) {
+export function sound(options) {
     extend(options, settings);
     settings.path = settings.path || "";
     settings.volume = settings.volume || 1;
@@ -398,8 +390,9 @@ function sound(options) {
         createSound(settings.sounds[i]);
     }
 }
-sound._method = function (method, name, options) {
+sound._method = function (method, name, options = {}) {
     if (name) {
+        // @ts-ignore
         sounds[name] && sounds[name][method](options);
     }
     else {
@@ -407,6 +400,7 @@ sound._method = function (method, name, options) {
             if (!sounds.hasOwnProperty(i) || !sounds[i]) {
                 continue;
             }
+            // @ts-ignore
             sounds[i][method](options);
         }
     }
@@ -432,16 +426,16 @@ sound.destroy = function (name) {
         }
     }
 };
-sound.play = function (name, options) {
+sound.play = function (name, options = {}) {
     this._method("play", name, options);
 };
-sound.stop = function (name, options) {
+sound.stop = function (name, options = {}) {
     this._method("stop", name, options);
 };
-sound.pause = function (name, options) {
+sound.pause = function (name, options = {}) {
     this._method("pause", name, options);
 };
-sound.volume = function (name, options) {
+sound.volume = function (name, options = {}) {
     this._method("volume", name, options);
 };
 //# sourceMappingURL=ion.sound.js.map

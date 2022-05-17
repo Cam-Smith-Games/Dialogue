@@ -1,0 +1,23 @@
+{
+    "name": "Connor",
+    "size": { "x": 64, "y": 64 },
+    "expressions": {
+        "smile": { "x": 0, "y": 0 },
+        "happy": { "x": 64, "y": 0 },
+
+        "sad": { "x": 0, "y": 64 },
+        "happy_football": { "x": 64, "y": 64 },
+
+        "blush": { "x": 0, "y": 128 },
+        "mad": { "x": 64, "y": 128 },
+
+
+        "demon_time": { "x": 0, "y": 192 },
+        "flushed": { "x": 64, "y": 192 },
+        
+        "sad_naked": { "x": 0, "y": 256 },
+        "default": { "x": 64, "y": 256 },
+
+        "eat": { "x": 0, "y": 320 }
+    }
+}

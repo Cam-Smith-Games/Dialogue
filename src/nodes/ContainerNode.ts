@@ -53,9 +53,11 @@ export default class ContainerNode extends AbstractNode {
             .from(element.childNodes)      
             .map(elem => {
                 if (elem instanceof Element) {
+                    console.log("container node", elem);
                     return new ContainerNode(elem, character, parent)
                 }
                 if (elem.textContent.trim()) {
+                    console.log("text node", elem);
                     return new TextNode(elem, character, parent);
                 }
                 return null;
