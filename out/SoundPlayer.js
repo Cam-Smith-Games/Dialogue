@@ -38,7 +38,7 @@ export class SoundPlayer {
         return null;
     }
 }
-SoundPlayer.ROOT_PATH = "/assets/sound";
+SoundPlayer.ROOT_PATH = "./assets/sound";
 SoundPlayer.channels = {};
 SoundPlayer.Enabled = true;
 class Sound {

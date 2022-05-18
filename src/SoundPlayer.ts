@@ -2,7 +2,7 @@
 // TODO: might want settings like volume, duration, loop, etc
 export class SoundPlayer {
 
-    public static ROOT_PATH:string = "/assets/sound";
+    public static ROOT_PATH:string = "./assets/sound";
 
     /** @param src file path relative to SoundPlayer.ROOT_PATH
      * @param count number of instances to add (more = more memory, but allows overlap for faster playback)*/
