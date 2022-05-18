@@ -1,0 +1,76 @@
+[
+    {
+        "name": "Smiley",
+        "dialogues": [
+            {
+                "nodes": [
+                    {
+                        "type": "BLOCK"
+                    },
+                    {
+                        "type": "BLOCK"
+                    },
+                    {
+                        "children": [
+                            {
+                                "delay": 500,
+                                "type": "DELAY"
+                            }
+                        ],
+                        "type": "BLOCK"
+                    },
+                    {
+                        "type": "BLOCK"
+                    },
+                    {
+                        "children": [
+                            {
+                                "delay": 500,
+                                "type": "INLINE"
+                            }
+                        ],
+                        "type": "BLOCK"
+                    },
+                    {
+                        "type": "BLOCK"
+                    },
+                    {
+                        "type": "BLOCK"
+                    }
+                ]
+            }
+        ],
+        "states": [
+            {
+                "face": "game_happy.png",
+                "voice": "boop_happy.ogg",
+                "id": null
+            },
+            {
+                "face": "graem_sad.png",
+                "voice": "boop_sad.ogg",
+                "id": "sad"
+            },
+            {
+                "speed": 1.25,
+                "id": "fast"
+            }
+        ]
+    },
+    {
+        "name": "Drake",
+        "dialogues": [
+            {
+                "nodes": [
+                    {
+                        "type": "BLOCK"
+                    },
+                    {
+                        "type": "BLOCK"
+                    }
+                ]
+            }
+        ],
+        "states": []
+    }
+]

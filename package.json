@@ -1,0 +1,3 @@
+{ 
+    "doc": "jsdoc -d docs modules/dialogue.js"
+}
