@@ -1,5 +1,6 @@
 import { loadImage } from "./util.js";
 export default class Character {
+    // #endregion
     constructor(data) {
         this.name = data.name;
         if (!this.name) {
@@ -8,15 +9,29 @@ export default class Character {
         }
         this.size = data.size || { x: 64, y: 64 };
         this.portrait = data.portrait;
-        this.expressions = data.expressions;
+        this.speed = data.speed || 75;
+        this.voice = data.voice;
+        // parsing expressions (could be an ICharacterExpression or just a vector)
+        this.expressions = {};
+        for (let key in data.expressions) {
+            let exp = data.expressions[key];
+            if ("pos" in exp) {
+                this.expressions[key] = exp;
+            }
+            else {
+                this.expressions[key] = {
+                    pos: exp
+                };
+            }
+        }
         // defaulting expression
         if ("default" in this.expressions) {
-            this.expression = "default";
+            this._expression_key = "default";
         }
         else {
             let keys = Object.keys(this.expressions);
             if (keys.length) {
-                this.expression = keys[0];
+                this._expression_key = keys[0];
             }
             else {
                 // TODO: if this happens, just render entire image
@@ -24,13 +39,24 @@ export default class Character {
             }
         }
     }
+    get expression_key() { return this._expression_key; }
+    set expression_key(val) {
+        this._expression_key = val;
+        this._expression = null;
+    }
+    get expression() {
+        if (!this._expression) {
+            this._expression = this.expressions[this._expression_key];
+        }
+        return this._expression;
+    }
     /** @param id unique id of character (also the relative file path to json/img files inside ROOT_PATH)*/
     static async fetch(id) {
         if (id in this.CHARACTERS) {
-            console.log("returning fetched character: ", id);
+            //console.log("returning fetched character: ", id);
             return this.CHARACTERS[id];
         }
-        console.log("fetching character...", id);
+        //console.log("fetching character...", id);
         let full_path = `${Character.ROOT_PATH}/${id}.json`;
         const response = await fetch(full_path);
         const data = await response.json();

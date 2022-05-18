@@ -1,8 +1,9 @@
 import { Dialogue } from "./Dialogue.js";
 (async function () {
-    let dialogue = await Dialogue.fetch("adrian_graem");
-    $("#btnStart").on("click", () => {
-        dialogue.start(0);
+    let dialogues = await Dialogue.fetch("adrian_graem");
+    $(".dialogue").on("click", function () {
+        $(this).off();
+        dialogues[0].start(0); // 14
     });
 }());
 /**

@@ -15,13 +15,20 @@ export default class AbstractNode {
      * @param  [parent] parent to extend properties from */
     constructor(element, character, parent = null) {
         this.character = character;
-        // attribute inheritance = parent -> state -> self
+        // attribute inheritance = character -> parent -> self
+        if (character) {
+            this.extendCharacter(character);
+        }
         // copy extendable properties from parent (if provided)
         if (parent) {
             this.extend(parent);
         }
         if (element) {
-            this.apply(element, ["speed", "float"], ["delay", "number"], "face", "voice", "classes", "color", "expression");
+            this.apply(element, { name: "speed", type: AttributeType.FLOAT, default: 75 }, { name: "delay", type: AttributeType.NUMBER }, "face", "voice", "classes", "color", "expression");
+        }
+        // default speed if undefined (NOTE: allow 0, which means instant)
+        if (this.speed == null) {
+            this.speed == 75;
         }
     }
     /**
@@ -30,43 +37,52 @@ export default class AbstractNode {
      * @param attributes list of attributes to extract, either in string or tuple form. If tuple, an extra type parameter is passed to parse string to appropriate type
      */
     apply(elem, ...attributes) {
-        for (let attr of attributes) {
-            // arg will either be string or tuple. string form ignores type and only specifies name
-            let name, type = "";
-            if (typeof attr == "string") {
-                name = attr;
+        for (let a of attributes) {
+            // arg will either be string or object. if string. just use name
+            let attr;
+            if (typeof a == "string") {
+                attr = {
+                    name: a
+                };
             }
-            // tuple form stores both name and type in array format
             else {
-                name = attr[0];
-                type = attr[1];
+                attr = a;
             }
-            if (elem.hasAttribute(name)) {
-                // pull string value from element
-                // if type is provided and valid, use appropriate mapper to map value to correct type
-                let value = elem.getAttribute(name);
-                if (type in StringParser) {
-                    value = StringParser[type](value);
+            if (elem.hasAttribute(attr.name)) {
+                // get string value from element
+                let value = elem.getAttribute(attr.name);
+                // parse value if necessary
+                if (attr.type in StringParser) {
+                    value = StringParser[attr.type](value);
                 }
                 // now apply the formatted value to node
                 // @ts-ignore
-                this[name] = value;
+                this[attr.name] = value;
+            }
+            else if (attr.default != null) {
+                // @ts-ignore
+                this[attr.name] = attr.default;
             }
         }
+    }
+    /** Copies values from character.
+     * These will be overriden by either parent element or node properties
+     */
+    extendCharacter(character) {
+        this.speed = character.speed;
+        this.voice = character.voice;
     }
     /**
      * Copies values from parent node.
      * Can be overriden later by node itself if values are defined
     **/
     extend(parent) {
-        this.speed = parent.speed;
-        this.delay = parent.delay;
-        this.face = parent.face;
-        this.voice = parent.voice;
-        this.classes = parent.classes;
-        this.color = parent.color;
-        this.state = parent.color;
-        this.expression = parent.expression;
+        // NOTE: do not copy delay
+        let props = ["speed", "voice", "classes", "color", "expression"];
+        for (let prop of props) {
+            // @ts-ignore
+            this[prop] = parent[prop];
+        }
     }
     ////////// STATIC ///////////
     /** Maps child elements to appropriate types, excluding nulls **/
@@ -77,15 +93,19 @@ export default class AbstractNode {
             .toArray();
     }
 }
-/**
- * Object specifying how to map strings to specified typs
- * @type {Object<string,StringParserCallback>}
-*/
+var AttributeType;
+(function (AttributeType) {
+    AttributeType[AttributeType["BOOL"] = 0] = "BOOL";
+    AttributeType[AttributeType["JSON"] = 1] = "JSON";
+    AttributeType[AttributeType["NUMBER"] = 2] = "NUMBER";
+    AttributeType[AttributeType["FLOAT"] = 3] = "FLOAT";
+})(AttributeType || (AttributeType = {}));
+/** Object specifying how to map strings to specified typs */
 const StringParser = {
     // empty bools are interepreted as true (i.e. <... bool /> vs <... bool=true />)
-    "bool": str => str == "" || str == "true" ? true : false,
-    "json": str => JSON.parse(str),
-    "number": str => Number(str),
-    "float": str => parseFloat(str)
+    [AttributeType.BOOL]: str => str == "" || str == "true" ? true : false,
+    [AttributeType.JSON]: str => JSON.parse(str),
+    [AttributeType.NUMBER]: str => Number(str),
+    [AttributeType.FLOAT]: str => parseFloat(str)
 };
 //# sourceMappingURL=AbstractNode.js.map

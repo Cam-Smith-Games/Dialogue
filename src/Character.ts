@@ -9,32 +9,59 @@ interface IVector {
     y:number;
 }
 
+export interface ICharacterExpression {
+    /* source position within sprite sheet */
+    pos: IVector
+    /* optional base talk speed for this expression */
+    speed?:number
+}
 
+/** @note this is the data model for character json files */
 export interface ICharacter {
-    /** Display name and unique identifier for the Character.
-     * @todo 
-     * In the future, might need to add an optional ID to distinguish 2 characters with the same display name.
-     * However, I currently can't think of a scenario where you would ever want 2 characters with the same name.
-     */
+    /** Display name and unique identifier for the Character */
     name: string
+
     /** sprite size (defualts to 64x64) */
     size?: IVector
 
-    // TODO: expressions might need more properties. this might turn into "IExpression | IVector"
-    /** mapping expression ID to position within sprite sheet */
-    expressions: Record<string, IVector>
+    /** dictionary of expressions (can just be a tile position, or an object containing more properties) */
+    expressions: Record<string, IVector|ICharacterExpression>
 
+    /** portrait image to render */
     portrait: HTMLImageElement
+
+    /* optional base talk speed for this character */
+    speed?:number;
+
+    /** optional sound for character voice */
+    voice?:string;
 }
+
 
 export default class Character implements ICharacter {
     name: string;
     size: IVector;
     portrait: HTMLImageElement;
-    expressions: Record<string, IVector>;
+    expressions: Record<string, ICharacterExpression>;
+    speed:number;
+    voice?:string;
 
-    /** current expression */
-    expression:string;
+    // #region caching expression
+    private _expression_key:string;
+    public get expression_key() { return this._expression_key; }
+    public set expression_key(val:string) { 
+        this._expression_key = val;
+        this._expression = null;
+    }
+   
+    private _expression:ICharacterExpression;
+    public get expression() {
+        if (!this._expression){
+            this._expression = this.expressions[this._expression_key];
+        }
+        return  this._expression;
+    }
+    // #endregion
 
     constructor(data:ICharacter) {
         
@@ -46,16 +73,31 @@ export default class Character implements ICharacter {
 
         this.size = data.size || { x: 64, y: 64 };
         this.portrait = data.portrait;
-        this.expressions = data.expressions;
+        this.speed = data.speed || 75;
+        this.voice = data.voice;
+
+        // parsing expressions (could be an ICharacterExpression or just a vector)
+        this.expressions = {};
+        for (let key in data.expressions) {
+            let exp = data.expressions[key];
+            if ("pos" in exp) {
+                this.expressions[key] = exp;
+            }
+            else {
+                this.expressions[key] = {
+                    pos: exp
+                }
+            }
+        }
 
         // defaulting expression
         if ("default" in this.expressions) {
-            this.expression = "default";
+            this._expression_key = "default";
         }
         else {
             let keys = Object.keys(this.expressions);
             if (keys.length) {
-                this.expression = keys[0];
+                this._expression_key = keys[0];
             }
             else {
                 // TODO: if this happens, just render entire image
@@ -74,11 +116,11 @@ export default class Character implements ICharacter {
     /** @param id unique id of character (also the relative file path to json/img files inside ROOT_PATH)*/
     static async fetch(id:string) {
         if (id in this.CHARACTERS) {
-            console.log("returning fetched character: ", id);
+            //console.log("returning fetched character: ", id);
             return this.CHARACTERS[id];
         }
 
-        console.log("fetching character...", id);
+        //console.log("fetching character...", id);
 
         let full_path = `${Character.ROOT_PATH}/${id}.json`;
         const response = await fetch(full_path);
