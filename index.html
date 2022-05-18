@@ -10,23 +10,27 @@
     <link href="style.css" rel="stylesheet" />
 
     <script defer="defer" src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-    <script defer="defer" type="module" src="main.js"></script>
+    <script defer="defer" type="module" src="./out/main.js"></script>
 </head>
 <body>
 
     <div class="dialogue">
-        <section class="profile">
-            <img />
-            <div class="name"></div>
-        </section>
+
         <section class="content">
             <div class="text"></div>
-            <button disabled class="fa fa-caret-right"></div>
+            <button disabled class="fa fa-caret-right"></button>
         </section>
-
+        <section class="profile">
+            <canvas width="64" height="64"></canvas>
+            <div class="name"></div>
+        </section>
     </div>
 
-    <br/>
-    <button id="btnStart">START</button>
+
+
+    <div id="debug">
+        <div class="title">title</div>
+        <div class="delay">delay</div>
+    </div>
 </body>
 </html>

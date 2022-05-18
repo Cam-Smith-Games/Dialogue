@@ -1,0 +1,137 @@
+<dialogue id="adrian_graem1">
+
+    <node character="adrian" speed=50>
+        <s expression="happy">*typing sounds*</s>
+        <s>If do... don't... else do while...</s>
+        <s>Boy I sure do love codin!</s>
+    </node>
+
+    <node character="adrian">
+        <s expression="mad">Oh, Hey Graem... </s>
+        <s>Didn't see you there buddy...</s>
+    </node>
+
+    <node character="graem">
+        <s expression="happy">Hey! <delay 500/> Guess what?!</s>
+        <s>I got TWO kills in PUBG today. 😎</s>
+    </node>
+
+    <node character="graem">
+        <div>But then <delay 200 expression="sad"/> I died...</div>
+    </node>
+
+    <node character="adrian">
+        <s expression="sad">Awww shucks... don't worry buddy...</s>
+        <s expression="default">You'll be as good as me and Cam one day 🧢.</s>
+        <s>Just gotta keep practicin!</s>
+        <delay 1000 />
+        <div></div>
+        <s expression="drink" speed=100>Rum and coke?</s>
+    </node>
+
+    <node character="graem">
+        <div>Oh... <delay 200/> sure.</div>
+        <div>I mean I prefer light beers with my hummus but I guess this will suffice.</div>
+    </node>
+
+    <node character="austin">
+        <div>Howdy fellas!</div>
+    </node>
+
+    <node character="adrian">
+        <s expression="mad">Austin...</s>
+        <s inline>I'ma be honest we're kinda busy here.</s>
+        <s>You mind seeing yourself out?</s>
+    </node>
+
+    <node character="austin">
+        <s expression="sad">But...</s>
+        <s>I brought Jake?</s>
+    </node>
+
+    <node character="jake">
+        <s>Word...</s>
+        <delay 500 />
+        <s expression="shocked">WAIT!</s>
+        <s delay="500">Is that... <delay 500/> No wayyyy...</s>
+        <div delay="500"></div>
+        <s>You've got <span color="brown">BAKED BEANS?</span> 😩😩😋</s>
+    </node>
+
+    <node character="josh">
+        <s expression="shocked">Did somebody say <span color="brown" speed=50 bold>BEANS?</span></s>
+    </node>
+
+    <node character="graem">
+        <s expression="default">No</s>
+    </node>
+
+    <node character="josh">
+        <div expression="sad">Oh...</div>
+        <div delay="500">Ok. <delay 250 />I just.</div>
+        <div delay=100>I swear I just heard a dude say <inline color="brown">BAKED BEANS</inline></div>
+    </node>
+
+    <node character="adrian">
+        <s>Nope.</s>
+        <s expression="mad">Now if you'll excuse us?</s>
+    </node>
+
+    <select character="graem">
+        <option dialogue="josh_stairs">Push Josh down the stairs</option>
+        <option dialogue="austin_fondle">Sexually assault Austin</option>
+        <option dialogue="beat_graem">
+            Toss a bouncy ball at the wall and yell "LOOK OUT!". <br/>  
+            While everyone is distracted, sucker punch Graem and begin beating the shit out of him.
+        </option>
+    </select>
+    
+    
+    <!-- Cam steps in... This is where user dialogue comes into play -->
+
+</dialogue>
+
+<dialogue id="beat_graem">
+    <node character="graem">
+        <div expression="sad">Owww!</div>
+        <div expression="mad" delay=500>Ah fuck!</div>
+        <div delay=500>No please!</div>
+        <div expression="sad" delay=250>Ahhh you got blood all over my new taupe hoodie.</div>
+    </node>
+    <node>
+        <div>Graem simply mentioning the color of his hoodie seemingly sparked an outburst of rage within Adrian.</div>
+        <div>Adrian begins kicking the fuck out of graems rib cage until he dies.</div>
+    </node>
+</dialogue>
+
+<dialogue id="josh_stairs">
+    <node>
+        <s>Josh look!</s>
+        <s>A guy wearing a mask!</s>
+    </node>
+    <node character="josh">
+        <s expression="default"d>How dare th..</s>
+        <s expression="shocked">Ahh!</s>
+        <b inline delay="500">thump</b>
+        <b inline delay="500"> thump</b>
+        <b inline delay="250"> thump</b>
+        <b inline delay="250"> thump</b>
+        <s delay=1000 expression="sad">Mom!</s>
+        <s>I got a booboo! 😢</s>
+    </node>
+</dialogue>
+
+<dialogue id="austin_fondle">
+    <node>
+        <div>Austin...</div>
+        <div delay=250>Come here I have somethin' to tell you.</div>
+    </node>
+    <node character="austin">
+        <div>Oh boy! <delay 100/> I love secrets!</div>
+    </node>
+    <node>
+        <s>You see this?</s>
+        <div></div>
+        <s bold>begin sexually assaulting austin</s>
+    </node>
+</dialogue>

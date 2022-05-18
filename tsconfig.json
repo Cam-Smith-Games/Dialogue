@@ -1,0 +1,38 @@
+{
+    "compilerOptions": {
+      "lib": [ "es2017", "es6", "dom", "scripthost", "DOM.Iterable" ],
+      //      "lib": [ "es6", "dom", "es2017", "esnext" ],
+
+      "module": "esnext",
+      "target": "es2017",
+  
+
+      // temporarily allowing js until ion can be replaced
+      "allowJs": true,
+
+      // WARNINGS
+      "noImplicitAny": true,
+      "noImplicitThis": true,
+      "noImplicitReturns": true,
+      "noImplicitOverride": true,
+      "allowUnreachableCode": false,
+      "allowUnusedLabels": false,
+      "alwaysStrict": true,
+
+      "noUnusedParameters": false,
+      "noUnusedLocals": false,
+
+      "outDir": "out",
+
+      "sourceMap": true,
+
+      "typeRoots": ["node_modules/@types",],
+      "types": ["jquery"]
+      
+    },
+       
+    "typeAcquisition": {
+      "enable": true,
+      "include": ["jquery"]
+    }
+}
