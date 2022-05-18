@@ -4,11 +4,11 @@
 @import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css);
 @font-face {
     font-family: "oleaguid";
-    src: url("/assets/font/oleaguid.ttf")
+    src: url("./assets/font/oleaguid.ttf")
 }
 @font-face {
     font-family: "yoster";
-    src: url("/assets/font/yoster.ttf")
+    src: url("./assets/font/yoster.ttf")
 }
 .dialogue {
     /* #region THEME: this can be overwriten */
